@@ -4,15 +4,16 @@ import sys
 import os
 import re
 
-label_re = re.compile("^(?:(\w+):|[oO](\d+))\s*$")
-comment_re = re.compile("^\s*[;(]")
+label_re = re.compile(r"^(?:(\w+):|[oO](\d+))\s*$")
+comment_re = re.compile(r"^[;(]")
 
-m_re = re.compile("M(?P<number>\d+)", re.I)
+m_re = re.compile(r"\bM(?P<number>\d+)", re.I)
 #REPEAT label P###
-repeat_re = re.compile("REPEAT\s+(?P<label>\w+)", re.I)
-repeat_num_re = re.compile("REPEAT.*P\s*=?\s*(?P<num>\d+)", re.I)
+repeat_re = re.compile(r"\bREPEAT\s+(?P<label>\w+)", re.I)
+repeat_num_re = re.compile(r"\bREPEAT.*P\s*=?\s*(?P<num>\d+)", re.I)
 
-gotof_re = re.compile("GOTOF\s+(?P<label>\w+)", re.I)
+gotof_re = re.compile(r"\bGOTOF\s+(?P<label>\w+)", re.I)
+
 
 M6_lines = []
 
@@ -73,6 +74,7 @@ def process_lines(lines):
 
 	for number, line in enumerate(lines):
 		if number < skip_until: continue
+		line = line.strip()
 
 		#skip comment
 		if comment_re.match(line):
