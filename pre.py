@@ -18,7 +18,8 @@ subprogram_call_label_re = re.compile(r"\bM98.*?[^P](\w+)", re.I)
 subprogram_call_fanuc_re = re.compile(r"\bM98.*?P(\d+)", re.I)
 
 
-M6_lines = []
+
+M6_lines = ["(M6 macro expansion here)"]
 
 
 def first(items):
