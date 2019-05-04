@@ -4,7 +4,7 @@ import sys
 import os
 import re
 
-label_re = re.compile("^(?P<name>\w+):\s*$")
+label_re = re.compile("^(?:(\w+):|[oO](\d+))\s*$")
 comment_re = re.compile("^\s*[;(]")
 
 m_re = re.compile("M(?P<number>\d+)", re.I)
@@ -16,12 +16,19 @@ gotof_re = re.compile("GOTOF\s+(?P<label>\w+)", re.I)
 
 M6_lines = []
 
+
+def first(items):
+	for i in items:
+		if i != None:
+			return i
+
+
 def find_labels(lines):
 	labels = {}
 	for number, line in enumerate(lines):
 		match = label_re.match(line)
 		if not match: continue
-		name = match.groupdict()["name"]
+		name = first(match.groups())
 		if name in labels:
 			raise ValueError("duplicate label name: %s" % name)
 		labels[name] = number
