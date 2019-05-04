@@ -141,4 +141,4 @@ if __name__ == "__main__":
 	res = process_file(sys.argv[1])
 
 	for l in res:
-		print l,
+		print l
