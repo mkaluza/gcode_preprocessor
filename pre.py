@@ -14,6 +14,9 @@ repeat_num_re = re.compile(r"\bREPEAT.*P\s*=?\s*(?P<num>\d+)", re.I)
 
 gotof_re = re.compile(r"\bGOTOF\s+(?P<label>\w+)", re.I)
 
+subprogram_call_label_re = re.compile(r"\bM98.*?[^P](\w+)", re.I)
+subprogram_call_fanuc_re = re.compile(r"\bM98.*?P(\d+)", re.I)
+
 
 M6_lines = []
 
@@ -36,7 +39,7 @@ def find_labels(lines):
 	return labels
 
 
-def process_m_code(number, line):
+def process_m_code(number, line, lines, labels):
 	number = int(number)
 	if number == 6:
 		#toolchange
@@ -46,14 +49,16 @@ def process_m_code(number, line):
 		return [line], True
 	elif number == 98:
 		#call subprogram
-		match = label_re.match(line)
+		match = subprogram_call_fanuc_re.match(line)
 		if not match:
-			raise ValueError("Label not found in \"%s\"" % line)
-		name = first(match.groups())
+			match = subprogram_call_label_re.match(line)
+		if not match:
+			raise ValueError("Invalid M98 call: \"%s\"" % line)
+		name = match.groups()[0]
 		if name not in labels:
 			raise ValueError("Label not found: %s" % name)
-		#lines = process_lines() #TODO
-		return [line], Falsedd
+		target = labels[name]
+		return process_lines(lines[target:]), False
 	elif number == 99:
 		#return from subprogram
 		return [], True
@@ -84,7 +89,7 @@ def process_lines(lines):
 		#M codes processing
 		m = m_re.match(line)
 		if m:
-			m, exit = process_m_code(m.groupdict()["number"], line)
+			m, exit = process_m_code(m.groupdict()["number"], line, lines, labels)
 			result.extend(m)
 			if exit: break
 			continue
