@@ -40,15 +40,15 @@ def find_labels(lines):
 	return labels
 
 
-def process_m_code(number, line, lines, labels):
-	number = int(number)
-	if number == 6:
+def process_m_code(m_code, line, lines, labels):
+	m_code = int(m_code)
+	if m_code == 6:
 		#toolchange
 		return process_lines(M6_lines), False
-	elif number == 30:
+	elif m_code == 30:
 		#end of subprogram
 		return [line], True
-	elif number == 98:
+	elif m_code == 98:
 		#call subprogram
 		match = subprogram_call_fanuc_re.match(line)
 		if not match:
@@ -60,7 +60,7 @@ def process_m_code(number, line, lines, labels):
 			raise ValueError("Label not found: %s" % name)
 		target = labels[name]
 		return process_lines(lines[target:]), False
-	elif number == 99:
+	elif m_code == 99:
 		#return from subprogram
 		return [], True
 	else:
