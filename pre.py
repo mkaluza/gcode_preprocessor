@@ -45,7 +45,14 @@ def process_m_code(number, line):
 		return [line], True
 	elif number == 98:
 		#call subprogram
-		return [line], False
+		match = label_re.match(line)
+		if not match:
+			raise ValueError("Label not found in \"%s\"" % line)
+		name = first(match.groups())
+		if name not in labels:
+			raise ValueError("Label not found: %s" % name)
+		#lines = process_lines() #TODO
+		return [line], Falsedd
 	elif number == 99:
 		#return from subprogram
 		return [], True
